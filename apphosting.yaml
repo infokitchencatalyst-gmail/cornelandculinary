@@ -1,0 +1,9 @@
+# Google App Hosting Configuration
+runtime: nodejs18
+runConfig:
+  concurrency: 80
+  cpu: 1
+  memoryMiB: 512
+env:
+  - variable: NODE_ENV
+    value: production
