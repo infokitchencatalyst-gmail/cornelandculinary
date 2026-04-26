@@ -14,4 +14,3 @@
     ]
   }
 }
-3. Commit this file. This tells Firebase that your project is a simple static site and to stop looking for a complex framework build script.
