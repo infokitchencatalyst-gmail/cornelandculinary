@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cornel & Culinary | Refined Gastronomy</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Playfair Display for Serif, Inter for Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-[#FAFAFA] text-slate-900 selection:bg-[#D4AF37] selection:text-white">
+    <div id="root"></div>
+
+    <!-- React and Lucide Icons -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // Icons implementation using Lucide
+        const Icon = ({ name, size = 24, className = "" }) => {
+            const [svg, setSvg] = useState("");
+            useEffect(() => {
+                if (window.lucide) {
+                    const iconNode = window.lucide.icons[name];
+                    if (iconNode) {
+                        const attrs = {
+                            ...iconNode[1],
+                            width: size,
+                            height: size,
+                            class: `lucide lucide-${name} ${className}`,
+                            stroke: "currentColor",
+                            "stroke-width": 2,
+                            "stroke-linecap": "round",
+                            "stroke-linejoin": "round",
+                            fill: "none"
+                        };
+                        const attrStr = Object.entries(attrs).map(([k, v]) => `${k}="${v}"`).join(" ");
+                        const content = iconNode[2].map(child => `<${child[0]} ${Object.entries(child[1]).map(([k, v]) => `${k}="${v}"`).join(" ")} />`).join("");
+                        setSvg(`<svg ${attrStr}>${content}</svg>`);
+                    }
+                }
+            }, [name, size, className]);
+            return <span dangerouslySetInnerHTML={{ __html: svg }} />;
+        };
+
+        // --- UI COMPONENTS ---
+        const TEMP_75 = "75°C";
+        const TEMP_60 = "60°C";
+        const TEMP_20 = "20°C";
+
+        const SectionHeader = ({ title, subtitle, light = false }) => (
+            <div className="mb-10">
+                <h2 className={`text-4xl font-serif ${light ? 'text-white' : 'text-slate-900'}`}>{title}</h2>
+                <div className="h-1 w-16 bg-[#D4AF37] mt-3 mb-4"></div>
+                <p className={`${light ? 'text-slate-400' : 'text-slate-500'} font-light tracking-wide uppercase text-xs`}>{subtitle}</p>
+            </div>
+        );
+
+        const RedAlertCCP = ({ title, limit, children }) => (
+            <div className="my-6 border-l-4 border-[#D4AF37] bg-slate-900/5 p-5 rounded-r-lg shadow-sm">
+                <div className="flex items-center gap-2 text-red-700 font-bold mb-2">
+                    <Icon name="ShieldAlert" size={20} className="text-[#D4AF37]" />
+                    <span className="uppercase tracking-widest text-[10px] text-slate-500">Critical Control Point (CCP)</span>
+                </div>
+                <h4 className="text-xl font-serif text-slate-900 mb-1">{title}</h4>
+                <div className="text-red-600 font-mono font-bold mb-2 text-lg">Threshold: {limit}</div>
+                <div className="text-slate-700 leading-relaxed italic text-sm">{children}</div>
+            </div>
+        );
+
+        function App() {
+            const [view, setView] = useState('landing');
+            const [activeTab, setActiveTab] = useState('library');
+
+            return (
+                <div className="min-h-screen">
+                    {/* Navigation */}
+                    <nav className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-slate-100 h-24">
+                        <div className="max-w-[1440px] mx-auto px-8 h-full flex items-center justify-between">
+                            <div className="flex items-baseline gap-1 cursor-pointer group" onClick={() => setView('landing')}>
+                                <span className="text-3xl font-serif font-bold tracking-tight text-slate-900">Cornel</span>
+                                <span className="text-xl font-light text-[#D4AF37]">&</span>
+                                <span className="text-xl font-medium tracking-[0.2em] uppercase text-slate-400">Culinary</span>
+                            </div>
+                            
+                            <div className="hidden lg:flex items-center gap-12 text-[11px] font-bold uppercase tracking-[0.2em]">
+                                <button onClick={() => setView('landing')} className="hover:text-[#D4AF37] transition-colors">Heritage</button>
+                                <button onClick={() => setView('vault')} className="hover:text-[#D4AF37] transition-colors">Fellows Vault</button>
+                                <button className="bg-slate-900 text-[#D4AF37] px-8 py-3 rounded-full hover:bg-black transition-all">Subscription</button>
+                            </div>
+                        </div>
+                    </nav>
+
+                    {view === 'landing' && (
+                        <main className="pt-24">
+                            <section className="relative h-[85vh] flex items-center bg-[#1A1A1A] overflow-hidden">
+                                <div className="absolute inset-0 opacity-40 grayscale">
+                                    <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=80&w=2000" className="w-full h-full object-cover" />
+                                </div>
+                                <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent"></div>
+                                <div className="relative z-10 max-w-7xl mx-auto px-8 w-full text-white">
+                                    <div className="max-w-3xl">
+                                        <h1 className="text-7xl md:text-9xl font-serif mb-10 leading-[0.9] tracking-tight">
+                                            Refined <br/><span className="text-[#D4AF37] italic">Gastronomy</span>
+                                        </h1>
+                                        <p className="text-xl text-slate-300 font-light mb-12 leading-relaxed max-w-xl border-l border-white/20 pl-8">
+                                            Where Hakka Chinese heritage meets modern industrial rigor. A platform for the elite culinary architect.
+                                        </p>
+                                        <button onClick={() => setView('vault')} className="bg-[#D4AF37] text-black px-12 py-5 font-bold tracking-widest uppercase text-xs hover:bg-white transition-all">
+                                            Enter Fellows Vault
+                                        </button>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section className="py-32 bg-white">
+                                <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+                                    <div>
+                                        <SectionHeader title="Proof of Realization" subtitle="Standards of Excellence" />
+                                        <p className="text-slate-600 mb-10 leading-relaxed text-lg">
+                                            Establishing the digital gold standard for gastronomy. Every plate is held to the {TEMP_75} standard.
+                                        </p>
+                                        <div className="grid grid-cols-2 gap-6">
+                                            <div className="p-6 border border-slate-100 rounded-2xl">
+                                                <Icon name="Linkedin" className="text-[#D4AF37] mb-4" />
+                                                <div className="font-serif text-lg">Professional</div>
+                                            </div>
+                                            <div className="p-6 border border-slate-100 rounded-2xl">
+                                                <Icon name="Youtube" className="text-[#D4AF37] mb-4" />
+                                                <div className="font-serif text-lg">Resources</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="relative aspect-[4/5] bg-slate-100 rounded-3xl overflow-hidden shadow-2xl">
+                                        <img src="https://images.unsplash.com/photo-1577214495773-b33253a6c76a?auto=format&fit=crop&q=80&w=1000" className="w-full h-full object-cover grayscale" />
+                                    </div>
+                                </div>
+                            </section>
+                        </main>
+                    )}
+
+                    {view === 'vault' && (
+                        <main className="pt-24 min-h-screen flex bg-slate-50">
+                            <aside className="w-80 bg-white border-r border-slate-200 p-8 sticky top-24 h-[calc(100vh-96px)]">
+                                <div className="space-y-2">
+                                    {['library', 'recipes', 'haccp', 'exams'].map(id => (
+                                        <button key={id} onClick={() => setActiveTab(id)} className={`w-full flex items-center gap-4 px-6 py-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === id ? 'bg-slate-900 text-[#D4AF37]' : 'text-slate-400 hover:text-slate-900'}`}>
+                                            <Icon name={id === 'library' ? 'BookOpen' : id === 'recipes' ? 'ChefHat' : id === 'haccp' ? 'ShieldAlert' : 'Award'} size={18} />
+                                            {id}
+                                        </button>
+                                    ))}
+                                </div>
+                            </aside>
+                            <div className="flex-1 p-12">
+                                {activeTab === 'haccp' && (
+                                    <div className="max-w-4xl bg-white p-12 rounded-[2rem] border border-slate-200 shadow-xl">
+                                        <SectionHeader title="Operational Safety" subtitle="Standard Compliance" />
+                                        <RedAlertCCP title="The 75-Degree Protocol" limit={TEMP_75}>
+                                            Non-negotiable for commercial distribution. High-risk proteins must reach verified core temperatures.
+                                        </RedAlertCCP>
+                                    </div>
+                                )}
+                                {activeTab !== 'haccp' && (
+                                    <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200">
+                                        <Icon name="Lock" size={48} className="mx-auto mb-6 text-slate-300" />
+                                        <h3 className="text-2xl font-serif">Vault Content Locked</h3>
+                                        <p className="text-slate-400 mt-2">Active Fellowship Subscription Required</p>
+                                    </div>
+                                )}
+                            </div>
+                        </main>
+                    )}
+
+                    <footer className="bg-[#121212] py-24 text-white/40 text-[10px] uppercase tracking-[0.5em] text-center border-t border-white/5">
+                        © 2024 The Fellowship • Digital Architecture by Cornel
+                    </footer>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
